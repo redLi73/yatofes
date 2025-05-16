@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ja" id="top">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>クラブ＆バー</title>
+  <style>
+    /* ページ全体の背景 */
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('bg.png');
+      color: #FFFFFF;
+      font-family: "Noto Serif JP","Playfair Display",serif;
+      overflow-x: hidden;
+    }
+
+    /* 左上ロゴA */
+    .top-logo {
+      position: relative;
+      margin: 0 0 0 4.3%;
+      width: 20.3%;
+      z-index: 100;
+      transition: opacity 0.3s ease;
+    }
+
+    /* ハンバーガーコンテナ */
+    .hamburger-container {
+      position: fixed;
+      top: 0; right: 0;
+      width: 71px; height: 71px;
+      background: transparent;
+      z-index: 10001;
+      cursor: pointer;
+    }
+    .hamburger-container .line1,
+    .hamburger-container .line2 {
+      position: absolute;
+      left: calc((71px - 42px)/2);
+      width: 42px; height: 1px;
+      background: #ffffff;
+      transition: transform 0.3s ease, top 0.3s ease, background 0.3s ease;
+    }
+    .hamburger-container .line1 { top: 23px; }
+    .hamburger-container .line2 { top: 37px; }
+    .hamburger-container .menu-text {
+      position: absolute;
+      bottom: 7px;
+      left: calc((71px - 42px)/2);
+      width: 42px;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: .1em;
+      color: #ffffff;
+      margin: 0; padding: 0;
+    }
+    .hamburger-container .close-label { display: none; }
+    .hamburger-container.open .line1 {
+      top: 35px; transform: rotate(45deg);
+      background: #90a1a6;
+    }
+    .hamburger-container.open .line2 {
+      top: 35px; transform: rotate(-45deg);
+      background: #90a1a6;
+    }
+    .hamburger-container.open .menu-label { display: none; }
+    .hamburger-container.open .close-label {
+      display: inline; color: #90a1a6;
+    }
+
+    /* オーバーレイメニュー */
+    #menu {
+      display: none;
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.95);
+      z-index: 10000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #menu a {
+      color: #FFFFFF;
+      font-size: 2rem;
+      text-decoration: none;
+      margin: 15px 0;
+    }
+    #top.open .top-logo { opacity: 0; }
+
+    /* スクロール画像 */
+    .scroll-container {
+      position: relative;
+      width: 100%; height: 61dvh;
+      overflow: hidden;
+      margin: 0; padding: 0;
+      z-index: 50;
+    }
+    .scroll-track { display: flex; animation: scroll-left 60s linear infinite; }
+    .scroll-item { flex-shrink: 0; margin-right: 10px; }
+    .scroll-item img { height: 61dvh; width: auto; display: block; }
+    @keyframes scroll-left {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-1800px); }
+    }
+
+    .firstview-text {
+      position: absolute;
+      left: 4.3vw; bottom: 0;
+      font-size: 10px; line-height: 1.5;
+      color: #7f7f7f; margin: 0; padding: 0;
+    }
+
+    /* 整理券コンテナ共通 */
+    .ticket-box {
+      position: absolute;
+      width: 26vw;
+      height: 23vw;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #555;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      padding: 1rem;
+      text-align: center;
+    }
+    .ticket-box h3 {
+      margin: 0;
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      color: #ccc;
+    }
+    .ticket-box .ticket-num {
+      margin: 0.5rem 0 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 0 0 5px rgba(0,0,0,0.7);
+    }
+
+    /* 各整理券配置 */
+    #ticket-casino  { left: 5vw;  bottom: 5vw; }
+    #ticket-darts   { left: 37vw; bottom: 5vw; }
+    #ticket-mahjong { left: 69vw; bottom: 5vw; }
+
+    /* ご案内番号 */
+    .info-number {
+      position: absolute;
+      bottom: 28vw;
+      width: 100%;
+      text-align: center;
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      color: #fff;
+    }
+
+    /* Aコンテナ */
+    .a-container {
+      position: absolute; top: 105dvh;
+      left: 2vw; width: 96vw; height: 50dvh;
+      box-sizing: border-box; z-index: 65;
+    }
+    .a-container img.ugokuA {
+      position: absolute; top: 30px; left: 0; width: 42vw;
+    }
+    .a-container img.ugokuB {
+      position: absolute; bottom: 0; right: 0; width: 35vw;
+    }
+
+    /* 企画説明仮置き */
+    .plan-placeholder {
+      position: absolute; top: 250dvh;
+      left: 2vw; width: 96vw;
+      text-align: center; font-size: 1.5rem; z-index: 75;
+    }
+
+    /* ABOUTセクション */
+    .about-section {
+      position: absolute; top: 155dvh; left: 0; width: 100%;
+      padding: 6vw 5vw 8vw;
+      background: url('bg.png') center/cover no-repeat;
+      box-sizing: border-box; z-index: 70;
+    }
+    .about-inner {
+      max-width: 900px; margin: 0 auto;
+      text-align: center; padding-top: 20px;
+    }
+    .about-en,
+    .about-lead {
+      transition: transform 0.5s ease;
+    }
+    .about-section.show .about-en,
+    .about-section.show .about-lead {
+      transform: translateY(-20px);
+    }
+    .about-desc {
+      transition: transform 0.5s ease 0.3s;
+    }
+    .about-section.show .about-desc {
+      transform: translateY(-20px);
+    }
+
+    .about-en {
+      font-family: "Playfair Display",serif;
+      font-size: clamp(20px,4vw,34px);
+      letter-spacing: .25em; text-transform: uppercase;
+      color: #90a1a6; margin: 0 0 1.5rem; line-height: 1;
+      font-weight: 200;
+    }
+    .about-lead {
+      font-size: clamp(22px,4.5vw,36px);
+      line-height: 1.4; font-weight: 600;
+      margin: 0 0 2rem; color: #FFFFFF;
+    }
+    .about-desc {
+      font-size: clamp(15px,3.2vw,20px);
+      line-height: 1.9; margin: 0; color: #FFFFFF;
+    }
+    .sp-only { display: none; }
+    @media (max-width: 768px) { .sp-only { display: inline; } }
+
+    /* 中央ロゴB */
+    .logo {
+      position: absolute; width: 29.3vw; height: 25.784vw;
+      left: 35.35vw; top: calc(217.5px + 6.206vw);
+      background: url('logoB.png') no-repeat center/cover;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body id="top">
+
+  <!-- ハンバーガーメニュー -->
+  <div class="hamburger-container" onclick="toggleMenu()">
+    <div class="line1"></div>
+    <div class="line2"></div>
+    <p class="menu-text">
+      <span class="menu-label">MENU</span>
+      <span class="close-label">CLOSE</span>
+    </p>
+  </div>
+
+  <!-- オーバーレイメニュー -->
+  <nav id="menu">
+    <a href="#top" onclick="toggleMenu()">TOP</a>
+    <a href="#about" onclick="toggleMenu()">ABOUT</a>
+    <a href="#">ACCESS</a>
+  </nav>
+
+  <!-- 左上ロゴA -->
+  <img src="logoA.png" alt="Logo A" class="top-logo" />
+
+  <!-- スクロールされる画像 -->
+  <div class="scroll-container">
+    <div class="scroll-track">
+      <div class="scroll-item"><img src="scroll1.png" alt="1" /></div>
+      <div class="scroll-item"><img src="scroll2.png" alt="2" /></div>
+      <div class="scroll-item"><img src="scroll3.png" alt="3" /></div>
+      <div class="scroll-item"><img src="scroll4.png" alt="4" /></div>
+    </div>
+    <p class="firstview-text">
+      ネオンが灯る、音と遊びのバー 「Bar KIKAK」<br>
+      4年3組に開店
+    </p>
+  </div>
+
+  <!-- 整理券３種表示 -->
+  <div id="ticket-casino" class="ticket-box">
+    <h3>カジノ</h3>
+    <p class="ticket-num">—</p>
+  </div>
+  <div id="ticket-darts" class="ticket-box">
+    <h3>ダーツ</h3>
+    <p class="ticket-num">—</p>
+  </div>
+  <div id="ticket-mahjong" class="ticket-box">
+    <h3>麻雀</h3>
+    <p class="ticket-num">—</p>
+  </div>
+
+  <!-- ご案内番号 -->
+  <p class="info-number">ご案内番号</p>
+
+  <!-- Aコンテナ -->
+  <div class="a-container">
+    <img src="ugokuA.png" alt="動くA" class="ugokuA" />
+    <img src="ugokuB.png" alt="動くB" class="ugokuB" />
+  </div>
+
+  <!-- 企画説明仮置き -->
+  <div class="plan-placeholder">
+    本サイトでは個人情報の入力やCookie等を使用した情報収集は行っておりません。
+  </div>
+
+  <!-- ABOUT セクション -->
+  <section id="about" class="about-section">
+    <div class="about-inner">
+      <h2 class="about-en">ABOUT</h2>
+      <p class="about-lead">
+        会話、空間、<br class="sp-only">時の流れを愉しむ場所
+      </p>
+      <p class="about-desc">
+        4年3組に開店した「Bar KIKAK」。<br>
+        重厚感ある空間で、上質な娯楽と心地よい時間をお届けします。<br>
+        お一人でも、誰かとでも―。<br>
+        どのようなシーンでもご満足いただけるひとときをご提供いたします。
+      </p>
+    </div>
+  </section>
+
+  <!-- 中央ロゴB -->
+  <div class="logo"></div>
+
+  <script>
+    function toggleMenu() {
+      const body = document.getElementById('top');
+      const hamb = document.querySelector('.hamburger-container');
+      const menu = document.getElementById('menu');
+      const isOpen = hamb.classList.toggle('open');
+      body.classList.toggle('open', isOpen);
+      menu.style.display = isOpen ? 'flex' : 'none';
+    }
+
+    // SHOW クラス付与
+    document.addEventListener('DOMContentLoaded', () => {
+      const about = document.querySelector('.about-section');
+      new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting) {
+          about.classList.add('show');
+        }
+      }, { threshold: 0.1 }).observe(about);
+    });
+  </script>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD61hQI08c8ZiIUs-HiRKLHVl3DeTaFmSA",
+      authDomain: "togensai-92cb8.firebaseapp.com",
+      databaseURL: "https://togensai-92cb8-default-rtdb.firebaseio.com",
+      projectId: "togensai-92cb8",
+      storageBucket: "togensai-92cb8.appspot.com",
+      messagingSenderId: "98670394706",
+      appId: "1:98670394706:web:b9f9ce966cbccf1f61ce8b"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const refs = {
+      mahjong: db.ref('tickets/mahjong'),
+      casino:  db.ref('tickets/casino'),
+      darts:   db.ref('tickets/darts')
+    };
+    Object.entries(refs).forEach(([key, ref]) => {
+      const el = document.querySelector(`#ticket-${key} .ticket-num`);
+      ref.on('value', snap => {
+        el.textContent = snap.val() !== null
+          ? snap.val()
+          : '未発行';
+      });
+    });
+  </script>
+</body>
+</html>
